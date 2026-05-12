@@ -1,0 +1,16 @@
+services:
+  database:
+    image: mysql:8.0
+    container_name: abdelazize_blogtech_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: blogtech
+      MYSQL_USER: blogtech_user
+      MYSQL_PASSWORD: blogtech_pass
+    ports:
+      - "3307:3306"
+    volumes:
+      - abdelazize_blogtech_db_data:/var/lib/mysql
+
+volumes:
+  abdelazize_blogtech_db_data:
