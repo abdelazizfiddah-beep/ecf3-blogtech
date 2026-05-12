@@ -2,19 +2,18 @@
 
 namespace App\Entity;
 
-
-use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CommentRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\ApiResource;
-
-
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource]
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
 class Comment
 {
+    #[Groups(['article:detail'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -24,14 +23,17 @@ class Comment
     #[ORM\JoinColumn(nullable: false)]
     private ?Article $article = null;
 
+    #[Groups(['article:detail'])]
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;
 
+    #[Groups(['article:detail'])]
     #[Assert\NotBlank]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $content = null;
 
+    #[Groups(['article:detail'])]
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -46,6 +48,7 @@ class Comment
     public function setArticle(?Article $article): static
     {
         $this->article = $article;
+
         return $this;
     }
 
@@ -57,6 +60,7 @@ class Comment
     public function setAuthor(?User $author): static
     {
         $this->author = $author;
+
         return $this;
     }
 

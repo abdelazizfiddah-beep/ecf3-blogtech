@@ -2,37 +2,37 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use App\Repository\CategoryRepository;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\ApiResource;
-
-
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[UniqueEntity('name')]
-#[ApiResource]
 #[UniqueEntity('slug')]
+#[ApiResource]
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 class Category
 {
+    #[Groups(['article:list', 'article:detail', 'category:list'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-
+    #[Groups(['article:list', 'article:detail', 'category:list'])]
     #[Assert\NotBlank]
-    #[Assert\Unique]
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[Assert\NotBlank]
-    #[Assert\Unique]
+    #[Groups(['article:list', 'article:detail', 'category:list'])]
     #[ORM\Column(length: 255)]
     private ?string $slug = null;
+
+    #[Groups(['category:list'])]
     #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: 'categories')]
     private Collection $articles;
 
@@ -52,6 +52,7 @@ class Category
             $this->articles->add($article);
             $article->addCategory($this);
         }
+
         return $this;
     }
 
@@ -60,6 +61,7 @@ class Category
         if ($this->articles->removeElement($article)) {
             $article->removeCategory($this);
         }
+
         return $this;
     }
 

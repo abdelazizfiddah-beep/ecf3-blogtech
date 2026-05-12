@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ article.title }} - BlogTech{% endblock %}
+
+{% block body %}
+    <article>
+        <h1>{{ article.title }}</h1>
+
+        <p>
+            Par {{ article.author.username }}
+            le {{ article.createdAt|date('d/m/Y H:i') }}
+        </p>
+
+        <p>
+            Catégories :
+            {% for category in article.categories %}
+                <a href="{{ path('app_category_show_public', {'slug': category.slug}) }}">
+                    {{ category.name }}
+                </a>{% if not loop.last %}, {% endif %}
+            {% else %}
+                Aucune
+            {% endfor %}
+        </p>
+
+        <div>
+            {{ article.content|nl2br }}
+        </div>
+    </article>
+
+    <section>
+        <h2>Commentaires</h2>
+
+        {% for comment in article.comments if comment.approved %}
+            <article>
+                <p>{{ comment.content }}</p>
+                <p>
+                    Par {{ comment.author.username }}
+                    le {{ comment.createdAt|date('d/m/Y H:i') }}
+                </p>
+            </article>
+        {% else %}
+            <p>Aucun commentaire approuvé.</p>
+        {% endfor %}
+    </section>
+{% endblock %}

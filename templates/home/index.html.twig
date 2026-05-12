@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - BlogTech
+{% endblock %}
+
+{% block body %}
+	<h1>Articles récents</h1>
+
+	{% for article in articles %}
+		{% include 'article/_article_card.html.twig' with { article: article } %}
+	{% else %}
+		<p>Aucun article publié.</p>
+	{% endfor %}
+{% endblock %}

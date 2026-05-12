@@ -2,49 +2,53 @@
 
 namespace App\Entity;
 
-
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use ApiPlatform\Metadata\ApiResource;
+use App\Enum\StatusEnum;
+use App\Repository\ArticleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
-use App\Enum\StatusEnum;
-use App\Repository\ArticleRepository;
 use Doctrine\ORM\Mapping as ORM;
-use ApiPlatform\Metadata\ApiResource;
-
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource]
 #[UniqueEntity('slug')]
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 class Article
 {
+    #[Groups(['article:list', 'article:detail', 'category:list'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['article:list', 'article:detail'])]
     #[ORM\ManyToOne(inversedBy: 'articles')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $author = null;
 
+    #[Groups(['article:list', 'article:detail', 'category:list'])]
     #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'articles')]
     private Collection $categories;
 
+    #[Groups(['article:detail'])]
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'article', orphanRemoval: true)]
     private Collection $comments;
 
-
+    #[Groups(['article:list', 'article:detail', 'category:list'])]
     #[Assert\NotBlank]
-    #[ORM\Column(length: 255)]
     #[Assert\Length(min: 5, max: 255)]
+    #[ORM\Column(length: 255)]
     private ?string $title = null;
 
+    #[Groups(['article:detail'])]
     #[Assert\NotBlank]
     #[ORM\Column(type: Types::TEXT)]
     private ?string $content = null;
 
-
+    #[Groups(['article:list', 'article:detail', 'category:list'])]
     #[Assert\NotBlank]
     #[ORM\Column(length: 255, unique: true)]
     private ?string $slug = null;
@@ -52,6 +56,7 @@ class Article
     #[ORM\Column(type: 'string', enumType: StatusEnum::class)]
     private StatusEnum $status = StatusEnum::Draft;
 
+    #[Groups(['article:list', 'article:detail', 'category:list'])]
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -72,6 +77,7 @@ class Article
     public function setAuthor(?User $author): static
     {
         $this->author = $author;
+
         return $this;
     }
 
@@ -85,12 +91,14 @@ class Article
         if (!$this->categories->contains($category)) {
             $this->categories->add($category);
         }
+
         return $this;
     }
 
     public function removeCategory(Category $category): static
     {
         $this->categories->removeElement($category);
+
         return $this;
     }
 
@@ -105,6 +113,7 @@ class Article
             $this->comments->add($comment);
             $comment->setArticle($this);
         }
+
         return $this;
     }
 
@@ -115,8 +124,10 @@ class Article
                 $comment->setArticle(null);
             }
         }
+
         return $this;
     }
+
     public function getId(): ?int
     {
         return $this->id;

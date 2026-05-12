@@ -1,0 +1,29 @@
+{# templates/article/_article_card.html.twig #}
+
+<article>
+    <h2>
+        <a href="{{ path('app_article_show_public', {'id': article.id}) }}">
+            {{ article.title }}
+        </a>
+    </h2>
+
+    <p>
+        Par {{ article.author.username }} -
+        {{ article.createdAt|date('d/m/Y') }}
+    </p>
+
+    <p>
+        {{ article.content|slice(0, 100) ~ '...' }}
+    </p>
+
+    <p>
+        Catégories :
+        {% for category in article.categories %}
+            <a href="{{ path('app_category_show_public', {'slug': category.slug}) }}">
+                {{ category.name }}
+            </a>{% if not loop.last %}, {% endif %}
+        {% else %}
+            Aucune
+        {% endfor %}
+    </p>
+</article>
